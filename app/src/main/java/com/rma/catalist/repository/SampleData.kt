@@ -1,0 +1,67 @@
+package com.rma.catalist.repository
+
+import com.rma.catalist.model.CatInfo
+
+val SampleData = listOf(
+//      val id: Int,
+//      val name: String,
+//      val alternativeName: String,
+//      val description: String,
+//      val origin: String,
+//      val temperament: String,
+//      val lifeSpan: String,
+//      val weight: String,
+//      val adaptability: Int,
+//      val affectionLevel: Int,
+//      val childFriendly: Int,
+//      val dogFriendly: Int,
+//      val energyLevel: Int,
+    CatInfo(
+        id = "1",
+        name = "Crna",
+        alternativeName = "Black",
+        description = "Crna macka, mala i slatka. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom.",
+        origin = "Srbija",
+        temperament = "Ljubazna, Nezavisna, Osetljiva, Prijateljska, Samostalna",
+        lifeSpan = "10 godina",
+        weight = "5kg",
+        adaptability = 5,
+        affectionLevel = 5,
+        childFriendly = 4,
+        dogFriendly = 2,
+        energyLevel = 4,
+        rare = 0
+    ),
+    CatInfo(
+        id = "2",
+        name = "Bela",
+        alternativeName = "White",
+        description = "Mala bela macka",
+        origin = "Srbija",
+        temperament = "Bezobrazna, Inteligentna, Ljubazna, Ljubomorna, Nezavisna, Osetljiva, Oštra, Prijateljska, Samostalna",
+        lifeSpan = "14 godina",
+        weight = "3kg",
+        adaptability = 2,
+        affectionLevel = 5,
+        childFriendly = 1,
+        dogFriendly = 2,
+        energyLevel = 4,
+        rare = 1
+    ),
+    CatInfo(
+        id = "3",
+        name = "Siva",
+        alternativeName = "Grey",
+        description = "Mala siva maca",
+        origin = "Srbija",
+        temperament = "Ljubazna, Nezavisna, Osetljiva, Prijateljska, Samostalna",
+        lifeSpan = "15 godina",
+        weight = "2kg",
+        adaptability = 5,
+        affectionLevel = 5,
+        childFriendly = 1,
+        dogFriendly = 1,
+        energyLevel = 5,
+        rare = 0
+    ),
+    )
