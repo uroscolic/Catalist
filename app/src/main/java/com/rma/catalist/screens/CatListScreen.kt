@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +55,7 @@ import com.rma.catalist.R
 import com.rma.catalist.model.CatInfo
 import com.rma.catalist.repository.Repository
 import com.rma.catalist.ui.theme.CatalistTheme
+import com.rma.catalist.ui.theme.Samsung
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -75,17 +77,25 @@ fun CatListScreen(
                 Row() {
 
                     CenterAlignedTopAppBar(
+                        //modifier = Modifier.background(Color.White),
                         navigationIcon = {
-//                            Image(
-//                                painter = painterResource(id = R.drawable.cat),
-//                                contentDescription = "Logo",
-//                                modifier = Modifier
-//                                    .weight(0.1f)
-//                                    .padding(start = 8.dp)
-//                                    .size(24.dp)
-//                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.cat),
+                                contentDescription = "Logo",
+                                modifier = Modifier
+                                    .weight(0.1f)
+                                    .padding(start = 8.dp)
+                                    .size(24.dp)
+                            )
                         },
-                        title = { Text(text = "Cat List") }
+                        title = {
+                            Text(
+                                text = "Cat List",
+                                fontFamily = Samsung,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 24.sp
+                            )
+                        }
                     )
 
                 }
@@ -184,13 +194,14 @@ fun CatListItem(
             },
     )
     {
-
+        val alternativeName = if (cat.alternativeName.isNotEmpty()) " (" + cat.alternativeName + ")" else ""
         Text(
             modifier = Modifier
             .padding(all = 16.dp),
             color = color,
-            text = cat.name + " (" + cat.alternativeName + ")",
-            fontSize = 20.sp
+            text = cat.name + alternativeName,
+            fontSize = 20.sp,
+            //fontWeight = FontWeight.Bold
         )
         Row() {
             Text(

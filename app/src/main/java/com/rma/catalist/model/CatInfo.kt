@@ -15,6 +15,7 @@ class CatInfo(
     val dogFriendly: Int,
     val energyLevel: Int,
     val rare: Int,
+    val wikipedia_url: String,
     ) {
 
 //    minimalno jednu sliku rase,

@@ -23,14 +23,15 @@ val SampleData = listOf(
         description = "Crna macka, mala i slatka. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom. Obozava da se mazi i da se igra. Obozava da jede ribu. Veoma je nezavisna i voli da se igra lopticom.",
         origin = "Srbija",
         temperament = "Ljubazna, Nezavisna, Osetljiva, Prijateljska, Samostalna",
-        lifeSpan = "10 godina",
+        lifeSpan = "10 godina, 11 meseci, 12 dana",
         weight = "5kg",
-        adaptability = 5,
+        adaptability = 3,
         affectionLevel = 5,
         childFriendly = 4,
         dogFriendly = 2,
-        energyLevel = 4,
-        rare = 0
+        energyLevel = 1,
+        rare = 0,
+        wikipedia_url = "https://en.wikipedia.org/wiki/Black_cat"
     ),
     CatInfo(
         id = "2",
@@ -46,7 +47,8 @@ val SampleData = listOf(
         childFriendly = 1,
         dogFriendly = 2,
         energyLevel = 4,
-        rare = 1
+        rare = 1,
+        wikipedia_url = "https://en.wikipedia.org/wiki/White_cat"
     ),
     CatInfo(
         id = "3",
@@ -62,6 +64,7 @@ val SampleData = listOf(
         childFriendly = 1,
         dogFriendly = 1,
         energyLevel = 5,
-        rare = 0
+        rare = 0,
+        wikipedia_url = "https://en.wikipedia.org/wiki/Grey_cat"
     ),
-    )
+)

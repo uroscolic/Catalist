@@ -2,14 +2,23 @@ package com.rma.catalist.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.rma.catalist.R
+
+val Samsung = FontFamily(
+    Font(R.font.samsungsharpsans, FontWeight.Normal),
+    Font(R.font.samsungsharpsans_medium, FontWeight.Medium),
+    Font(R.font.samsungsharpsans_bold, FontWeight.Bold)
+
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Samsung,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
