@@ -1,4 +1,4 @@
-package com.rma.catalist.ui.theme
+package com.rma.catalist.core.theme
 
 import androidx.compose.ui.graphics.Color
 

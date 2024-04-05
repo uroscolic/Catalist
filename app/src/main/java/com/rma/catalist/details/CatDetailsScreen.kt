@@ -1,7 +1,6 @@
-package com.rma.catalist.screens
+package com.rma.catalist.details
 
 import android.annotation.SuppressLint
-import androidx.compose.material3.Card
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,31 +12,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,20 +34,62 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.rma.catalist.R
+import com.rma.catalist.core.compose.Loading
+import com.rma.catalist.core.compose.NoCatFound
+import com.rma.catalist.core.compose.TextMessage
 import com.rma.catalist.repository.Repository
-import com.rma.catalist.ui.theme.CatalistTheme
-import com.rma.catalist.ui.theme.Samsung
+import com.rma.catalist.core.theme.CatalistTheme
+import com.rma.catalist.core.theme.Samsung
+
+
+fun NavGraphBuilder.details(route : String, navController : NavController) {
+    composable(route, arguments = listOf(
+        navArgument("id") {
+            type = NavType.StringType
+            nullable = false
+        }
+    )
+    ){
+        navBackStackEntry -> val catId = navBackStackEntry.arguments?.getString("id") ?: throw IllegalStateException("Missing ID")
+        val catDetailsViewModel = viewModel<CatDetailsViewModel>(
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return CatDetailsViewModel(catId = catId) as T
+                }
+            },
+        )
+        val state = catDetailsViewModel.state.collectAsState()
+
+        CatDetailsScreen(
+            state = state.value,
+            onBack = {
+                navController.navigateUp()
+            }
+        )
+    }
+}
+
+
 val orange = Color.hsl(23f, 0.8f, 0.65f)
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DetailsScreen(
-    catId: String,
+fun CatDetailsScreen(
+    state : CatDetailsState,
     onBack: () -> Unit
 ) {
 
-    val cat = Repository.getById(catId)
+    val cat = state.cat
     Scaffold(
         topBar = {
             Column(
@@ -81,7 +109,6 @@ fun DetailsScreen(
                                     .clickable {
                                         onBack()
                                     }
-
                             )
                         },
                         title = {
@@ -108,70 +135,82 @@ fun DetailsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {
-                Spacer(
-                    modifier = Modifier.padding(16.dp)
-                )
 
-                Image(
-                    painter = painterResource(id = R.drawable.cat),
-                    contentDescription = "Cat",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .background(Color.White)
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    text = "${cat?.name}",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                if(cat?.alternativeName?.isNotEmpty() == true) {
-                    Text(
-                        text = "(${cat.alternativeName})",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Normal
+                if(cat != null)
+                {
+                    Spacer(
+                        modifier = Modifier.padding(16.dp)
                     )
+
+                    Image(
+                        painter = painterResource(id = R.drawable.cat),
+                        contentDescription = "Cat",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(Color.White)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(8.dp),
+                        text = cat.name,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if(cat.alternativeName.isNotEmpty()) {
+                        Text(
+                            text = "(${cat.alternativeName})",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    RowForShortText(label = "Origin:", text = cat.origin)
+                    RowForShortText(label = "Life Span:", text = cat.lifeSpan)
+                    RowForShortText(label = "Weight:", text = cat.weight)
+                    RowForShortText(label = "Rare:", text = if(cat.rare == 0) "No" else "Yes")
+                    RowForShortText(label = "Wikipedia:", text = cat.wikipedia_url)
+
+                    ColumnForLongText(label = "Temperament:", text = cat.temperament)
+
+                    Spacer(modifier = Modifier.padding(10.dp))
+
+                    CharacteristicWithProgressIndicator(
+                        label = "Adaptability",
+                        progress = cat.adaptability.toFloat()
+                    )
+                    CharacteristicWithProgressIndicator(
+                        label = "Affection Level",
+                        progress = cat.affectionLevel.toFloat()
+                    )
+                    CharacteristicWithProgressIndicator(
+                        label = "Child Friendly",
+                        progress = cat.childFriendly.toFloat()
+                    )
+                    CharacteristicWithProgressIndicator(
+                        label = "Dog Friendly",
+                        progress = cat.dogFriendly.toFloat()
+                    )
+                    CharacteristicWithProgressIndicator(
+                        label = "Energy Level",
+                        progress = cat.energyLevel.toFloat()
+                    )
+
+                    ColumnForLongText(label = "Description:", text = cat.description)
+                    Spacer(modifier = Modifier.padding(20.dp))
+
                 }
-                Spacer(
-                    modifier = Modifier.padding(16.dp)
-                )
-                RowForShortText(label = "Origin:", text = "${cat?.origin}")
-                RowForShortText(label = "Life Span:", text = "${cat?.lifeSpan}")
-                RowForShortText(label = "Weight:", text = "${cat?.weight}")
-                RowForShortText(label = "Rare:", text = if(cat?.rare == 0) "No" else "Yes")
-                RowForShortText(label = "Wikipedia:", text = "${cat?.wikipedia_url}")
+                else
+                {
+                    if(state.loading)
+                        Loading()
+                    else if(state.error != null)
+                        TextMessage(text = "Error: ${state.error}")
+                    else
+                        NoCatFound(catId = state.catId)
 
-
-
-                ColumnForLongText(label = "Temperament:", text = "${cat?.temperament}")
-
-                Spacer(modifier = Modifier.padding(10.dp))
-
-                CharacteristicWithProgressIndicator(
-                    label = "Adaptability",
-                    progress = cat?.adaptability?.toFloat() ?: 0f
-                )
-                CharacteristicWithProgressIndicator(
-                    label = "Affection Level",
-                    progress = cat?.affectionLevel?.toFloat() ?: 0f
-                )
-                CharacteristicWithProgressIndicator(
-                    label = "Child Friendly",
-                    progress = cat?.childFriendly?.toFloat() ?: 0f
-                )
-                CharacteristicWithProgressIndicator(
-                    label = "Dog Friendly",
-                    progress = cat?.dogFriendly?.toFloat() ?: 0f
-                )
-                CharacteristicWithProgressIndicator(
-                    label = "Energy Level",
-                    progress = cat?.energyLevel?.toFloat() ?: 0f
-                )
-
-                ColumnForLongText(label = "Description:", text = "${cat?.description}")
-                Spacer(modifier = Modifier.padding(20.dp))
-
+                }
             }
         }
     )
@@ -281,8 +320,8 @@ fun RowForShortText(label: String, text: String) {
 @Preview
 fun DetailsScreenPreview() {
     CatalistTheme {
-        DetailsScreen(
-            catId = "1",
+        CatDetailsScreen(
+            state = CatDetailsState(cat = Repository.allData().first(), catId = "1"),
             onBack = {}
         )
     }

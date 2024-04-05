@@ -1,6 +1,6 @@
 package com.rma.catalist.repository
 
-import com.rma.catalist.model.CatInfo
+import com.rma.catalist.domain.CatInfo
 
 val SampleData = listOf(
 //      val id: Int,

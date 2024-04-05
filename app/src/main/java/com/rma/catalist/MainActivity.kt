@@ -13,8 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.rma.catalist.repository.Repository
-import com.rma.catalist.screens.CatListScreen
-import com.rma.catalist.ui.theme.CatalistTheme
+import com.rma.catalist.list.CatListScreen
+import com.rma.catalist.core.theme.CatalistTheme
+import com.rma.catalist.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
 
@@ -23,38 +24,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             CatalistTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                    Column {
-                        data.forEach {
-                            Text(text = it.name)
-                        }
-                    }
-                }
+                AppNavigation()
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
 
-    CatListScreen(cats = Repository.allData()) {
-
-    }
-
-}

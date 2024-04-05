@@ -1,16 +1,15 @@
-package com.rma.catalist.screens
+package com.rma.catalist.list
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -29,12 +26,12 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedSuggestionChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -51,11 +48,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.rma.catalist.R
-import com.rma.catalist.model.CatInfo
+import com.rma.catalist.core.compose.Loading
+import com.rma.catalist.core.compose.TextMessage
+import com.rma.catalist.domain.CatInfo
 import com.rma.catalist.repository.Repository
-import com.rma.catalist.ui.theme.CatalistTheme
-import com.rma.catalist.ui.theme.Samsung
+import com.rma.catalist.core.theme.CatalistTheme
+import com.rma.catalist.core.theme.Samsung
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+fun NavGraphBuilder.catList(route : String, navController : NavController) {
+    composable(route) {
+
+        val catListViewModel = viewModel<CatListViewModel>()
+        val state by catListViewModel.state.collectAsState()
+
+        CatListScreen(
+            state = state,
+            onCatSelected = { cat ->
+                navController.navigate("details/${cat.id}")
+            }
+        )
+    }
+}
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -63,10 +83,10 @@ import com.rma.catalist.ui.theme.Samsung
 @Composable
 @ExperimentalMaterial3Api
 fun CatListScreen(
-    cats: List<CatInfo>,
+    state : CatListState,
     onCatSelected: (CatInfo) -> Unit
 ) {
-    var data by remember { mutableStateOf(cats) }
+
     val keyboard = LocalSoftwareKeyboardController.current
     Scaffold(
         topBar = {
@@ -77,7 +97,6 @@ fun CatListScreen(
                 Row() {
 
                     CenterAlignedTopAppBar(
-                        //modifier = Modifier.background(Color.White),
                         navigationIcon = {
                             Image(
                                 painter = painterResource(id = R.drawable.cat),
@@ -107,7 +126,7 @@ fun CatListScreen(
                     query = query,
                     onQueryChange = {
                         query = it
-                        data = Repository.search(query)
+                        //data = Repository.search(query)
                     },
                     onSearch = {
                         keyboard?.hide()
@@ -135,7 +154,7 @@ fun CatListScreen(
                                 .size(24.dp)
                                 .clickable {
                                     query = ""
-                                    data = Repository.search(query)
+                                    //data = Repository.search(query)
                                 }
                         )
                     },
@@ -159,18 +178,25 @@ fun CatListScreen(
                 Spacer(
                     modifier = Modifier.padding(16.dp)
                 )
-
-                data.forEach { cat ->
-                    Column {
-                        key (cat.id){
-                            CatListItem(
-                                cat = cat,
-                                onCatSelected = onCatSelected,
-                                color = Color.hsl(23f, 0.9f, 0.5f)
-                            )
-                            Spacer(
-                                modifier = Modifier.padding(16.dp)
-                            )
+                if(state.loading)
+                    Loading()
+                else if (state.error != null)
+                    TextMessage("Error: ${state.error.message}")
+                else if (state.cats.isEmpty())
+                    TextMessage("No cats found! Maybe they are hiding...")
+                else {
+                    state.cats.forEach { cat ->
+                        Column {
+                            key(cat.id) {
+                                CatListItem(
+                                    cat = cat,
+                                    onCatSelected = onCatSelected,
+                                    color = Color.hsl(23f, 0.9f, 0.5f)
+                                )
+                                Spacer(
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -178,6 +204,8 @@ fun CatListScreen(
         }
     )
 }
+
+
 
 @Composable
 fun CatListItem(
@@ -201,7 +229,6 @@ fun CatListItem(
             color = color,
             text = cat.name + alternativeName,
             fontSize = 20.sp,
-            //fontWeight = FontWeight.Bold
         )
         Row() {
             Text(
@@ -261,8 +288,26 @@ private fun cutToNCharacters(n:Int, text: String): String {
 fun CatListScreenPreview() {
     CatalistTheme {
         CatListScreen(
-            cats = Repository.allData(),
+            state = CatListState(
+                cats = Repository.search("search"),
+                loading = false,
+                //error = Error("Error")
+            ),
 
         ) {}
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun CatListScreenPreviewNotLoaded() {
+    CatalistTheme {
+        CatListScreen(
+            state = CatListState(
+                cats = Repository.allData(),
+                loading = false
+            ),
+
+            ) {}
     }
 }

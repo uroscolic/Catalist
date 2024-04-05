@@ -1,4 +1,4 @@
-package com.rma.catalist.model
+package com.rma.catalist.domain
 
 class CatInfo(
     val id: String,
