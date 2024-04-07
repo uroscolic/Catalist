@@ -93,11 +93,13 @@ fun CatDetailsScreen(
     Scaffold(
         topBar = {
             Column(
+
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row() {
 
                     CenterAlignedTopAppBar(
+
                         navigationIcon = {
                             Image(
                                 imageVector = Icons.Default.ArrowBack,
@@ -131,7 +133,8 @@ fun CatDetailsScreen(
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .fillMaxSize()
-                    .padding(it),
+                    .padding(it)
+                    .background(Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {

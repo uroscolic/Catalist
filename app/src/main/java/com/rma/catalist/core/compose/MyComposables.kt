@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TextMessage(text: String) {
     Text(
+        modifier = Modifier.padding(10.dp),
         text = text,
         fontSize = 20.sp
     )
