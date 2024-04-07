@@ -1,32 +1,35 @@
 package com.rma.catalist.domain
 
-class CatInfo(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class CatInfo(
     val id: String,
     val name: String,
-    val alternativeName: String,
+    val alt_names: String = "",
     val description: String,
     val origin: String,
     val temperament: String,
-    val lifeSpan: String,
-    val weight: String,
+    val life_span: String,
+    val weight: Weight,
     val adaptability: Int,
-    val affectionLevel: Int,
-    val childFriendly: Int,
-    val dogFriendly: Int,
-    val energyLevel: Int,
+    val affection_level: Int,
+    val child_friendly: Int,
+    val dog_friendly: Int,
+    val energy_level: Int,
     val rare: Int,
-    val wikipedia_url: String,
-    ) {
-
-//    minimalno jednu sliku rase,
-//    ime rase,
-//    kompletan opis rase,
-//    spisak zemalja porekla,
-//    sve osobine temperamenta,
-//    životni vek,
-//    prosečna težina i/ili visina rase,
-//    minimum 5 UI widgeta o ponašanju i potrebama rase po izboru autora.
-//    Iskoristiti sledeća polja iz api modela: ("adaptability": 5, "affection_level": 5, "child_friendly": 4, "dog_friendly": 5, "energy_level": 4, "grooming": 1, "health_issues": 3, "intelligence": 5, "shedding_level": 3, "social_needs": 5, "stranger_friendly": 5, "vocalisation": 5)
-//    da li je retka vrsta,
-
-}
+    val wikipedia_url: String = "",
+    val image: Image = Image("", "", 0, 0)
+)
+@Serializable
+data class Weight(
+    val imperial: String,
+    val metric: String
+)
+@Serializable
+data class Image(
+    val id: String,
+    val url: String,
+    val width: Int,
+    val height: Int
+)

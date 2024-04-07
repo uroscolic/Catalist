@@ -1,18 +1,23 @@
 package com.rma.catalist.core.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rma.catalist.R
 
 @Composable
 fun TextMessage(text: String) {
@@ -32,17 +37,16 @@ fun Loading()
             .fillMaxSize()
             .fillMaxHeight()
     ) {
+        Spacer(modifier = Modifier.padding(30.dp))
         Text(
             text = "Loading...",
+            fontSize = 20.sp
         )
-        LinearProgressIndicator(
-
-            color = Color.hsl(23f, 0.8f, 0.65f),
-
-            trackColor = Color(0xFFE0E0E0),
-            modifier = Modifier
-                .padding(top = 10.dp)
-
+        Spacer(modifier = Modifier.padding(10.dp))
+        Image(
+            modifier = Modifier.size(500.dp),
+            painter = painterResource(id = R.drawable.loading_cat),
+            contentDescription = null
         )
     }
 }

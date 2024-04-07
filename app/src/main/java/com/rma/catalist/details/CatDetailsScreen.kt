@@ -1,6 +1,7 @@
 package com.rma.catalist.details
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +28,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -42,7 +42,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.rma.catalist.R
+import coil.compose.SubcomposeAsyncImage
 import com.rma.catalist.core.compose.Loading
 import com.rma.catalist.core.compose.NoCatFound
 import com.rma.catalist.core.compose.TextMessage
@@ -144,13 +144,12 @@ fun CatDetailsScreen(
                     Spacer(
                         modifier = Modifier.padding(16.dp)
                     )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.cat),
-                        contentDescription = "Cat",
+                    Log.d("CatDetailsScreen", "cat.image.url: ${cat.image.url}")
+                    SubcomposeAsyncImage(
                         modifier = Modifier
-                            .size(100.dp)
-                            .background(Color.White)
+                            .fillMaxSize(),
+                        model = cat.image.url,
+                        contentDescription = null
                     )
                     Text(
                         modifier = Modifier
@@ -159,9 +158,11 @@ fun CatDetailsScreen(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    if(cat.alternativeName.isNotEmpty()) {
+                    if(cat.alt_names.isNotEmpty()) {
                         Text(
-                            text = "(${cat.alternativeName})",
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally),
+                            text = "(${cat.alt_names})",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal
                         )
@@ -170,8 +171,8 @@ fun CatDetailsScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                     RowForShortText(label = "Origin:", text = cat.origin)
-                    RowForShortText(label = "Life Span:", text = cat.lifeSpan)
-                    RowForShortText(label = "Weight:", text = cat.weight)
+                    RowForShortText(label = "Life Span:", text = cat.life_span)
+                    RowForShortText(label = "Weight:", text = cat.weight.metric)
                     RowForShortText(label = "Rare:", text = if(cat.rare == 0) "No" else "Yes")
                     RowForShortText(label = "Wikipedia:", text = cat.wikipedia_url)
 
@@ -185,19 +186,19 @@ fun CatDetailsScreen(
                     )
                     CharacteristicWithProgressIndicator(
                         label = "Affection Level",
-                        progress = cat.affectionLevel.toFloat()
+                        progress = cat.affection_level.toFloat()
                     )
                     CharacteristicWithProgressIndicator(
                         label = "Child Friendly",
-                        progress = cat.childFriendly.toFloat()
+                        progress = cat.child_friendly.toFloat()
                     )
                     CharacteristicWithProgressIndicator(
                         label = "Dog Friendly",
-                        progress = cat.dogFriendly.toFloat()
+                        progress = cat.dog_friendly.toFloat()
                     )
                     CharacteristicWithProgressIndicator(
                         label = "Energy Level",
-                        progress = cat.energyLevel.toFloat()
+                        progress = cat.energy_level.toFloat()
                     )
 
                     ColumnForLongText(label = "Description:", text = cat.description)

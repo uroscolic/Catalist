@@ -35,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -52,10 +51,10 @@ import androidx.navigation.compose.composable
 import com.rma.catalist.R
 import com.rma.catalist.core.compose.Loading
 import com.rma.catalist.core.compose.TextMessage
-import com.rma.catalist.domain.CatInfo
-import com.rma.catalist.repository.Repository
 import com.rma.catalist.core.theme.CatalistTheme
 import com.rma.catalist.core.theme.Samsung
+import com.rma.catalist.list.api.model.CatListUiModel
+import com.rma.catalist.repository.SampleDataUiModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,13 +74,12 @@ fun NavGraphBuilder.catList(route : String, navController : NavController) {
 }
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @ExperimentalMaterial3Api
 fun CatListScreen(
     state : CatListState,
-    onCatSelected: (CatInfo) -> Unit
+    onCatSelected: (CatListUiModel) -> Unit
 ) {
 
     val keyboard = LocalSoftwareKeyboardController.current
@@ -213,8 +211,8 @@ fun CatListScreen(
 
 @Composable
 fun CatListItem(
-    cat: CatInfo,
-    onCatSelected: (CatInfo) -> Unit,
+    cat: CatListUiModel,
+    onCatSelected: (CatListUiModel) -> Unit,
     color: Color
 ) {
     Card(
@@ -226,7 +224,7 @@ fun CatListItem(
             },
     )
     {
-        val alternativeName = if (cat.alternativeName.isNotEmpty()) " (" + cat.alternativeName + ")" else ""
+        val alternativeName = if (cat.alt_names.isNotEmpty()) " (" + cat.alt_names + ")" else ""
         Text(
             modifier = Modifier
             .padding(all = 16.dp),
@@ -245,14 +243,14 @@ fun CatListItem(
         }
         val text = cat.temperament.split(",")
         Row() {
-
+            val randomNumbers = text.indices.shuffled()
             for (i in 0 until 3) {
                 val leftPadding = if (i == 0) 10.dp else 5.dp
                 ElevatedSuggestionChip(
                     modifier = Modifier
                         .padding(start = leftPadding),
                     onClick = {},
-                    label = { Text(text[i]) },
+                    label = { Text(text[randomNumbers[i]]) },
                 )
             }
         }
@@ -285,7 +283,7 @@ private fun cutToNCharacters(n:Int, text: String): String {
     return text
 }
 
-
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -293,14 +291,15 @@ fun CatListScreenPreview() {
     CatalistTheme {
         CatListScreen(
             state = CatListState(
-                cats = Repository.search("search"),
+                cats = SampleDataUiModel,
                 loading = false,
                 //error = Error("Error")
             ),
 
         ) {}
     }
-}
+}*/
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -308,10 +307,9 @@ fun CatListScreenPreviewNotLoaded() {
     CatalistTheme {
         CatListScreen(
             state = CatListState(
-                cats = Repository.allData(),
-                loading = false
+                cats = SampleDataUiModel,
+                loading = true
             ),
-
-            ) {}
+        ) {}
     }
 }
