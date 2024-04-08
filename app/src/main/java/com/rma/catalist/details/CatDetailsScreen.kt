@@ -244,9 +244,9 @@ fun CharacteristicWithProgressIndicator(label: String, progress: Float) {
             progress = strength,
             color =
             if(strength >= 0.6f)
-                Color.hsl(135f, 0.64f, 0.64f)
+                orange
             else
-                Color.hsl(0f, 0.64f, 0.64f),
+                Color.hsl(23f, 0.5f, 0.4f),
 
             trackColor = Color(0xFFE0E0E0),
             modifier = Modifier

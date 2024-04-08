@@ -4,9 +4,11 @@ package com.rma.catalist.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rma.catalist.domain.CatInfo
+import com.rma.catalist.list.api.CatListUiEvent
 import com.rma.catalist.list.api.model.CatListUiModel
 import com.rma.catalist.repository.Repository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
@@ -19,10 +21,38 @@ class CatListViewModel constructor(
 
     private val _state = MutableStateFlow(CatListState())
     val state = _state.asStateFlow()
+    private val events = MutableSharedFlow<CatListUiEvent>()
     private fun setState (reducer : CatListState.() -> CatListState) = _state.getAndUpdate(reducer)
+    fun setEvent(event: CatListUiEvent){
+        viewModelScope.launch {
+            events.emit(event)
+        }
+    }
+
     init {
+        observeEvents()
         loadCats()
     }
+
+    private fun observeEvents() {
+        viewModelScope.launch {
+            events.collect{ it ->
+                when (it) {
+                    CatListUiEvent.ClearSearch -> {
+                        setState { copy(searchMode = false, query = "", filteredCats = emptyList()) }
+                    }
+                    CatListUiEvent.CloseSearch -> {
+                        setState { copy(searchMode = false, query = "", filteredCats = emptyList()) }
+                    }
+                    is CatListUiEvent.SearchQueryChanged -> {
+                        setState { copy(searchMode = true, query = it.query, filteredCats = repository.search(it.query).map { it.asCatListUiModel() }) }
+
+                    }
+                }
+            }
+        }
+    }
+
     private fun loadCats() {
         viewModelScope.launch {
             setState { copy(loading = true) }

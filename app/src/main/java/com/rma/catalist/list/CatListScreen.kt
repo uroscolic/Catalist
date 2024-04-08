@@ -1,6 +1,8 @@
 package com.rma.catalist.list
 
 import android.annotation.SuppressLint
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,6 +55,7 @@ import com.rma.catalist.core.compose.Loading
 import com.rma.catalist.core.compose.TextMessage
 import com.rma.catalist.core.theme.CatalistTheme
 import com.rma.catalist.core.theme.Samsung
+import com.rma.catalist.list.api.CatListUiEvent
 import com.rma.catalist.list.api.model.CatListUiModel
 import com.rma.catalist.repository.SampleDataUiModel
 
@@ -68,6 +71,9 @@ fun NavGraphBuilder.catList(route : String, navController : NavController) {
             state = state,
             onCatSelected = { cat ->
                 navController.navigate("details/${cat.id}")
+            },
+            eventPublisher = { event ->
+                catListViewModel.setEvent(event)
             }
         )
     }
@@ -79,10 +85,15 @@ fun NavGraphBuilder.catList(route : String, navController : NavController) {
 @ExperimentalMaterial3Api
 fun CatListScreen(
     state : CatListState,
-    onCatSelected: (CatListUiModel) -> Unit
+    onCatSelected: (CatListUiModel) -> Unit,
+    eventPublisher: (CatListUiEvent) -> Unit
 ) {
-
+    var query by remember { mutableStateOf("") }
     val keyboard = LocalSoftwareKeyboardController.current
+    BackHandler (enabled = state.searchMode) {
+        eventPublisher(CatListUiEvent.CloseSearch)
+        query = ""
+    }
     Scaffold(
         topBar = {
             Column(
@@ -114,14 +125,16 @@ fun CatListScreen(
 
                 }
                 Divider()
-                var query by remember { mutableStateOf("") }
+
                 SearchBar(
                     modifier = Modifier
                         .padding(bottom = 4.dp),
                     query = query,
                     onQueryChange = {
                         query = it
-                        //data = Repository.search(query)
+                        eventPublisher(CatListUiEvent.SearchQueryChanged(it))
+                        Log.d("aaabbb - OnQueryChange", state.searchMode.toString())
+                        Log.d("aaabbb - OnQueryChange", state.query)
                     },
                     onSearch = {
                         keyboard?.hide()
@@ -148,8 +161,10 @@ fun CatListScreen(
                             modifier = Modifier
                                 .size(24.dp)
                                 .clickable {
+                                    eventPublisher(CatListUiEvent.ClearSearch)
                                     query = ""
-                                    //data = Repository.search(query)
+                                    Log.d("aaabbb - X", state.searchMode.toString())
+                                    Log.d("aaabbb - X", state.query)
                                 }
                         )
                     },
@@ -190,7 +205,7 @@ fun CatListScreen(
                     }
 
                     else -> {
-                        items(state.cats) { cat ->
+                        items(if(state.searchMode) state.filteredCats else state.cats) { cat ->
                             key(cat.id) {
                                 CatListItem(
                                     cat = cat,
@@ -243,7 +258,9 @@ fun CatListItem(
         }
         val text = cat.temperament.split(",")
         Row() {
-            val randomNumbers = text.indices.shuffled()
+            val randomNumbers by remember {
+                mutableStateOf(text.indices.shuffled())
+            }
             for (i in 0 until 3) {
                 val leftPadding = if (i == 0) 10.dp else 5.dp
                 ElevatedSuggestionChip(
@@ -308,8 +325,10 @@ fun CatListScreenPreviewNotLoaded() {
         CatListScreen(
             state = CatListState(
                 cats = SampleDataUiModel,
-                loading = true
+                loading = false
             ),
+            onCatSelected = {},
+
         ) {}
     }
 }
