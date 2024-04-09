@@ -17,6 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +30,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -49,6 +53,7 @@ import com.rma.catalist.core.compose.TextMessage
 import com.rma.catalist.repository.Repository
 import com.rma.catalist.core.theme.CatalistTheme
 import com.rma.catalist.core.theme.Samsung
+import com.rma.catalist.domain.CatInfo
 
 
 fun NavGraphBuilder.details(route : String, navController : NavController) {
@@ -174,7 +179,10 @@ fun CatDetailsScreen(
                     RowForShortText(label = "Life Span:", text = cat.life_span)
                     RowForShortText(label = "Weight:", text = cat.weight.metric)
                     RowForShortText(label = "Rare:", text = if(cat.rare == 0) "No" else "Yes")
-                    RowForShortText(label = "Wikipedia:", text = cat.wikipedia_url)
+
+                    val uriHandler = LocalUriHandler.current
+
+                    CustomButton(uriHandler, cat.wikipedia_url)
 
                     ColumnForLongText(label = "Temperament:", text = cat.temperament)
 
@@ -218,6 +226,32 @@ fun CatDetailsScreen(
             }
         }
     )
+}
+
+@Composable
+private fun CustomButton(
+    uriHandler: UriHandler,
+    text: String
+) {
+    Button(
+        modifier = Modifier
+            .padding(top = 15.dp, bottom = 10.dp),
+        onClick = {
+            uriHandler.openUri(text)
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = orange
+        )
+    )
+    {
+        Text(
+            text = "Wikipedia link",
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+            fontFamily = Samsung
+        )
+    }
 }
 
 @Composable
