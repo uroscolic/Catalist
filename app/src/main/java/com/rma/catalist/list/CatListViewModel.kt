@@ -41,9 +41,6 @@ class CatListViewModel constructor(
                     CatListUiEvent.ClearSearch -> {
                         setState { copy(searchMode = false, query = "", filteredCats = emptyList()) }
                     }
-                    CatListUiEvent.CloseSearch -> {
-                        setState { copy(searchMode = false, query = "", filteredCats = emptyList()) }
-                    }
                     is CatListUiEvent.SearchQueryChanged -> {
                         setState { copy(searchMode = true, query = it.query, filteredCats = repository.search(it.query).map { it.asCatListUiModel() }) }
 
