@@ -91,7 +91,7 @@ fun CatListScreen(
     var query by remember { mutableStateOf("") }
     val keyboard = LocalSoftwareKeyboardController.current
     BackHandler (enabled = state.searchMode) {
-        eventPublisher(CatListUiEvent.CloseSearch)
+        eventPublisher(CatListUiEvent.ClearSearch)
         query = ""
     }
     Scaffold(
